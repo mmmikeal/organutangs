@@ -16,7 +16,6 @@ class App extends React.Component {
     super(props);
     this.state = {
       // items: sampleData,
-      auth: true,
       meetingLocations: [{ id: 'tacos-y-quesadillas-mexico-manhattan',
         name: 'Tacos Y Quesadillas Mexico',
         image_url: 'https://s3-media4.fl.yelpcdn.com/bphoto/drLoFbH5OHpiptuadnXw_A/o.jpg',
@@ -39,8 +38,11 @@ class App extends React.Component {
           display_address: [Array] },
         phone: '',
         display_phone: '',
-        distance: 309.03863120119996 }]
+        distance: 309.03863120119996 }],
+      auth: false
     };
+
+    this.setAuth = this.setAuth.bind(this);
   }
 
   handleClick(item) {
@@ -52,26 +54,18 @@ class App extends React.Component {
       console.log('data', data);
       this.setState({ meetingLocations: data });
     })
+
+  }
+
+  setAuth(input) {
+    this.setState({auth: input});
   }
 
   render () {
-
     return (
       <div>
-        {/*<LoginViewController items={this.state.items} isLoggedIn={this.state.auth}/>*/}
-        <Title /> 
-        <MeetUpForm />
-        <div style={{width:500, height:600, backgroundColor:'red', border: '2px solid black'}}>
-          <Map
-            markers={ this.state.meetingLocations }
-            center={{ lat: 40.751094, lng: -73.987597 }}
-            containerElement={<div style={{height:100+'%'}} />}
-            mapElement={<div style={{height:100+'%'}} />}
-          />
-        <List items={ this.state.meetingLocations } />
-        </div>
-      </div>
-    )
+       <LoginViewController isLoggedIn={this.state.auth} setAuth={this.setAuth}/>
+      </div>)
   }
 }
 

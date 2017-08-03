@@ -2,20 +2,9 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var session = require('express-session');
 
-var User = require('../database-mongo');
-
-// Register
-router.get('/register', function(req, res) {
-  res.redirect('/users/register');
-  //res.render('register');
-});
-
-// Login
-router.get('/login', function(req, res) {
-  res.redirect('users/login');
- // res.render('login');
-});
+var User = require('../database-mongo/models/user');
 
 // Register User
 router.post('/register', function(req, res) {
@@ -33,39 +22,34 @@ router.post('/register', function(req, res) {
       username: username,
       password: password
     });
-    User.createUser(newUser, function(err, user) {
+    User.createUser(newUser, (err, user) => {
       if (err) {
+        console.log("error creating user");
         throw err;
+      } else {
+        res.status(201).send();
       }
-      console.log("WE OUT HERE FAM", user);
     });
-
-    //req.flash('success_msg', 'You are registered and can now login');
-
-    res.redirect('/users/login');
   // all good here
   }, function(errors) {
     console.log("ERRR", errors);
-    res.send( "Not found", 404 );
-    // damn, validation errors!
+    res.status(404).send("Not found");
+    // validation errors!
   });
 });
 
-//middleware neccessary code
+
+
 passport.use(new LocalStrategy(
   function(username, password, done) {
     User.getUserByUsername(username, function(err, user) {
-      if (err) {
-        throw err;
-      }
+      if (err) throw err;
       if (!user) {
         return done(null, false, {message: 'Unknown User'});
       }
 
-    User.comparePassword(password, user.password, function(err, isMatch) {
-      if (err) {
-        throw err;
-      }
+    User.comparePassword(password, user.password, function(err, isMatch){
+      if (err) throw err;
       if (isMatch) {
         return done(null, user);
       } else {
@@ -85,19 +69,17 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-//login route
 router.post('/login',
-  passport.authenticate('local', {successRedirect: '/', failureRedirect: '/users/login'}),
+  passport.authenticate('local', {successRedirect:'/', failureRedirect:'/users/login',failureFlash: true}),
   function(req, res) {
+    res.status(201).send(req.isAuthenticated());
     res.redirect('/');
   });
-//logout route
-router.get('/logout', function(req, res) {
+
+router.get('/logout', function(req, res){
   req.logout();
-
-  //req.flash('success_msg', 'You are logged out');
-
-  res.redirect('/users/login');
+  res.status(201).send(req.isAuthenticated());
+  //res.redirect('/users/login');
 });
 
 module.exports = router;

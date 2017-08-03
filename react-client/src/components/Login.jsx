@@ -10,7 +10,7 @@ class Login extends React.Component {
     };
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
-    this.searched = this.searched.bind(this);
+    this.loggingIn = this.loggingIn.bind(this);
   }
 
   handleChangeName(event) {
@@ -23,27 +23,25 @@ class Login extends React.Component {
     this.setState({password: event.target.value});
   }
 
-  searched(e, user, pw) {
+  loggingIn(e, user, pw) {
+    //this.props.setAuth(true);
     e.preventDefault();
     axios.post('/users/login', {
       username: user,
       password: pw
     })
     .then((response) =>{
-      console.log(response);
-
+      this.props.setAuth(response); //FUCK FUCK FUCK
     })
     .catch(function (error) {
-      console.log(error);
+      console.log("error logging in ", error);
     });
   }
 
   render() {
     return (
-    <form onSubmit={(event)=>{this.props.searched(event, this.state.userName, this.state.password, this.state.password2)}}>
+    <form onSubmit={(event)=>{this.loggingIn(event, this.state.userName, this.state.password)}}>
       <input type="text" value={this.state.userName} onChange={this.handleChangeName}/>
-      <input type="submit" value="Submit"/>
-
       <input type="text" value={this.state.password} onChange={this.handleChangePassword}/>
       <input type="submit" value="Submit"/>
     </form>

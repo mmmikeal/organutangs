@@ -12,7 +12,7 @@ class Register extends React.Component {
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
     this.handleChangePassword2 = this.handleChangePassword2.bind(this);
-    this.searched = this.searched.bind(this);
+    this.register = this.register.bind(this);
   }
 
   handleChangeName(event) {
@@ -30,7 +30,7 @@ class Register extends React.Component {
     this.setState({password2: event.target.value});
   }
 
-  searched(e, user, pw, pw2) {
+  register(e, user, pw, pw2) {
     e.preventDefault();
     axios.post('/users/register', {
       username: user,
@@ -38,23 +38,24 @@ class Register extends React.Component {
       password2: pw2
     })
     .then((response) =>{
+      console.log("successfully registered");
       console.log(response);
 
     })
     .catch(function (error) {
+      console.log("error response registering from axios");
       console.log(error);
     });
   }
 
   render() {
     return (
-    <form onSubmit={(event)=>{this.props.searched(event, this.state.username, this.state.password, this.state.password2)}}>
+    <form onSubmit={(event)=>{this.register(event, this.state.username, this.state.password, this.state.password2)}}>
+      Please enter a username:
       <input type="text" value={this.state.username} onChange={this.handleChangeName}/>
-      <input type="submit" value="Submit"/>
-
+      Please enter a password:
       <input type="text" value={this.state.password} onChange={this.handleChangePassword}/>
-      <input type="submit" value="Submit"/>
-
+      Please confirm password:
       <input type="text" value={this.state.password2} onChange={this.handleChangePassword2}/>
       <input type="submit" value="Submit"/>
     </form>
